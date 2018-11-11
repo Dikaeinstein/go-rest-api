@@ -9,14 +9,6 @@ import (
 	"net/http"
 )
 
-var DefaultAccount = func(w http.ResponseWriter, r *http.Request) {
-	resp := map[string]interface{}{
-		"message": "This is a message",
-		"status":  true,
-	}
-	u.Respond(w, resp)
-}
-
 var CreateAccount = func(w http.ResponseWriter, r *http.Request) {
 
 	account := &models.Account{}

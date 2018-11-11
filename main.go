@@ -15,7 +15,7 @@ import (
 func main() {
 
 	router := mux.NewRouter()
-	// router.HandleFunc("/api", controllers.DefaultAccount).Methods("GET")
+	router.HandleFunc("/api", controllers.Welcome).Methods("GET")
 	router.HandleFunc("/api/user/new", controllers.CreateAccount).Methods("POST")
 	router.HandleFunc("/api/user/login", controllers.Authenticate).Methods("POST")
 	router.HandleFunc("/api/contacts/new", controllers.CreateContact).Methods("POST")
