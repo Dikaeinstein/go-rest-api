@@ -2,40 +2,46 @@ package models
 
 import (
 	"fmt"
+	"net"
 	"os"
 
+	"net/url"
+
 	"github.com/jinzhu/gorm"
+	// Import the postgres db driver
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
 )
 
-var db *gorm.DB //database
+var db *gorm.DB // Database
 
 func init() {
-
-	e := godotenv.Load() //Load .env file
-	if e != nil {
-		fmt.Print(e)
+	err := godotenv.Load() // Load .env file
+	if err != nil {
+		fmt.Print(err)
 	}
 
-	username := os.Getenv("db_user")
-	password := os.Getenv("db_pass")
-	dbName := os.Getenv("db_name")
-	dbHost := os.Getenv("db_host")
+	parsedURL, err := url.Parse(os.Getenv("DATABASE_URL"))
 
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password) //Build connection string
-	fmt.Println(dbUri)
+	dialect := parsedURL.Scheme
+	username := parsedURL.User.Username()
+	password, _ := parsedURL.User.Password()
+	dbName := parsedURL.Path[1:]
+	dbHost, _, _ := net.SplitHostPort(parsedURL.Host)
 
-	conn, err := gorm.Open("postgres", dbUri)
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password)
+	fmt.Println(dbURI)
+
+	conn, err := gorm.Open(dialect, dbURI)
 	if err != nil {
 		fmt.Print(err)
 	}
 
 	db = conn
-	db.Debug().AutoMigrate(&Account{}) //Database migration
+	db.Debug().AutoMigrate(&Account{}) // Database migration
 }
 
-//returns a handle to the DB object
+// GetDB returns a handle to the DB object
 func GetDB() *gorm.DB {
 	return db
 }

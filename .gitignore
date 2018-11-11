@@ -12,6 +12,9 @@
 *.out
 
 .env
+# Ignore vendor packages but include vendor.json to build vendor packages
 vendor/**
 !vendor/vendor.json
 .vscode
+# ignore app binary
+go-rest-api
