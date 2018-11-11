@@ -1,0 +1,4 @@
+vendor/* linguist-vendored
+app.json linguist-documentation
+Procfile linguist-documentation
+Makefile linguist-documentation

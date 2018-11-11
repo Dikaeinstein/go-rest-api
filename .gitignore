@@ -14,3 +14,4 @@
 .env
 vendor/**
 !vendor/vendor.json
+.vscode
