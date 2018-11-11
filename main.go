@@ -30,7 +30,7 @@ func main() {
 
 	fmt.Println("localhost:" + port)
 
-	err := http.ListenAndServe("localhost:"+port, router) //Launch the app, visit localhost:8000/api
+	err := http.ListenAndServe(":"+port, router) //Launch the app, visit localhost:8000/api
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
