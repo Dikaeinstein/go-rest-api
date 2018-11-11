@@ -1,0 +1,12 @@
+{
+    "name": "Go rest API",
+    "description": "A bare bones go rest api",
+    "keywords": [
+      "api",
+      "go",
+      "rest"
+    ],
+    "website": "http://dikaeinstein-go-rest-api.herokuapp.com",
+    "repository": "http://github.com/dikaeinstein/go-rest-api"
+  }
+  
