@@ -13,15 +13,16 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-type user string
+// User context key
+type User string
 
 // JwtAuthentication is the JWT middleware
 func JwtAuthentication(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		notAuth := []string{"/api/user/new", "/api/user/login"} // List of endpoints that doesn't require auth
-		requestPath := r.URL.Path                               // current request path
+		notAuth := []string{"/api/user/new", "/api/user/login", "/api"} // List of endpoints that doesn't require auth
+		requestPath := r.URL.Path                                       // current request path
 
 		// check if request does not need authentication, serve the request if it doesn't need it
 		for _, value := range notAuth {
@@ -78,7 +79,7 @@ func JwtAuthentication(next http.Handler) http.Handler {
 		// Everything went well, proceed with the request and
 		// set the caller to the user retrieved from the parsed token
 		// fmt.Sprintf("User %d", tk.UserID) // Useful for monitoring
-		ctx := context.WithValue(r.Context(), user("user"), tk.UserID)
+		ctx := context.WithValue(r.Context(), User("user"), tk.UserID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r) // proceed in the middleware chain!
 	})

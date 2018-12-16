@@ -36,10 +36,10 @@ func (account *Account) Validate() (map[string]interface{}, bool) {
 		return u.Message(false, "Password is required"), false
 	}
 
-	//Email must be unique
+	// Email must be unique
 	temp := &Account{}
 
-	//check for errors and duplicate emails
+	// Check for errors and duplicate emails
 	err := GetDB().Table("accounts").Where("email = ?", account.Email).First(temp).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return u.Message(false, "Connection error. Please retry"), false
@@ -96,10 +96,10 @@ func Login(email, password string) map[string]interface{} {
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { // Password does not match!
 		return u.Message(false, "Invalid login credentials. Please try again")
 	}
-	//Worked! Logged In
+	// Worked! Logged In
 	account.Password = ""
 
-	//Create JWT token
+	// Create JWT token
 	tk := &Token{UserID: account.ID}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
