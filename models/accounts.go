@@ -11,15 +11,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-/*
-JWT claims struct
-*/
+// Token is JWT claims struct
 type Token struct {
-	UserId uint
+	UserID uint
 	jwt.StandardClaims
 }
 
-//a struct to rep user account
+// Account is a struct to rep user account
 type Account struct {
 	gorm.Model
 	Email    string `json:"email"`
@@ -27,7 +25,7 @@ type Account struct {
 	Token    string `json:"token";sql:"-"`
 }
 
-//Validate incoming user details...
+// Validate incoming user details.
 func (account *Account) Validate() (map[string]interface{}, bool) {
 
 	if !strings.Contains(account.Email, "@") {
@@ -53,6 +51,7 @@ func (account *Account) Validate() (map[string]interface{}, bool) {
 	return u.Message(false, "Requirement passed"), true
 }
 
+// Create user account
 func (account *Account) Create() map[string]interface{} {
 
 	if resp, ok := account.Validate(); !ok {
@@ -68,19 +67,20 @@ func (account *Account) Create() map[string]interface{} {
 		return u.Message(false, "Failed to create account, connection error.")
 	}
 
-	//Create new JWT token for the newly registered account
-	tk := &Token{UserId: account.ID}
+	// Create new JWT token for the newly registered account
+	tk := &Token{UserID: account.ID}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
 	account.Token = tokenString
 
-	account.Password = "" //delete password
+	account.Password = "" // delete password
 
 	response := u.Message(true, "Account has been created")
 	response["account"] = account
 	return response
 }
 
+// Login user using email and password
 func Login(email, password string) map[string]interface{} {
 
 	account := &Account{}
@@ -93,28 +93,29 @@ func Login(email, password string) map[string]interface{} {
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password))
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { // Password does not match!
 		return u.Message(false, "Invalid login credentials. Please try again")
 	}
 	//Worked! Logged In
 	account.Password = ""
 
 	//Create JWT token
-	tk := &Token{UserId: account.ID}
+	tk := &Token{UserID: account.ID}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
-	account.Token = tokenString //Store the token in the response
+	account.Token = tokenString // Store the token in the response
 
 	resp := u.Message(true, "Logged In")
 	resp["account"] = account
 	return resp
 }
 
+// GetUser retrieves user account using user id
 func GetUser(u uint) *Account {
 
 	acc := &Account{}
 	GetDB().Table("accounts").Where("id = ?", u).First(acc)
-	if acc.Email == "" { //User not found!
+	if acc.Email == "" { // User not found!
 		return nil
 	}
 
