@@ -8,8 +8,7 @@ import (
 	"net/url"
 
 	"github.com/jinzhu/gorm"
-	// Import the postgres db driver
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/postgres" // Register the postgres db driver
 	"github.com/joho/godotenv"
 )
 
