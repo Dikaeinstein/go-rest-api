@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/dikaeinstein/go-rest-api/app"
+	"github.com/dikaeinstein/go-rest-api/middleware"
 	"github.com/dikaeinstein/go-rest-api/model"
 	"github.com/dikaeinstein/go-rest-api/util/response"
 )
@@ -31,7 +31,7 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 
 // GetContactsFor retrieves all contacts for a specific user
 func GetContactsFor(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(app.User("user")).(uint) // Grab the id of the user that sent the request
+	user := r.Context().Value(middleware.User("user")).(uint) // Grab the id of the user that sent the request
 
 	contacts := model.GetContacts(user)
 	data := response.Message(true, "success")
