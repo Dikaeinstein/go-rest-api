@@ -21,7 +21,7 @@ type Token struct {
 type Account struct {
 	gorm.Model
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password string `json:"password,omitempty"`
 	Token    string `json:"token" sql:"-"`
 }
 
@@ -30,7 +30,6 @@ func (account *Account) Validate() (map[string]interface{}, bool) {
 	if !strings.Contains(account.Email, "@") {
 		return response.Message(false, "Email address is required"), false
 	}
-
 	if len(account.Password) < 6 {
 		return response.Message(false, "Password is required"), false
 	}
@@ -83,7 +82,7 @@ func Login(email, password string) map[string]interface{} {
 	account := &Account{}
 	err := GetDB().Table("accounts").Where("email = ?", email).First(account).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if gorm.IsRecordNotFoundError(err) {
 			return response.Message(false, "Email address not found")
 		}
 		return response.Message(false, "Connection error. Please retry")
@@ -110,8 +109,10 @@ func Login(email, password string) map[string]interface{} {
 // GetUser retrieves user account using user id
 func GetUser(userID uint) *Account {
 	account := &Account{}
-	GetDB().Table("accounts").Where("id = ?", userID).First(account)
-	if account.Email == "" { // User not found!
+	userNotFound := GetDB().Table("accounts").Where("id = ?", userID).
+		First(account).RecordNotFound()
+
+	if userNotFound {
 		return nil
 	}
 

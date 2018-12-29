@@ -10,20 +10,16 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // Register the postgres db driver
-	"github.com/joho/godotenv"
 )
 
 var d *gorm.DB // Database
 
 func init() {
-	err := godotenv.Load() // Load .env file
-	if err != nil {
-		fmt.Print(err)
-	}
 	appEnv := os.Getenv("APP_ENV")
 	dbURI := parseDbConfig(appEnv)
 	dialect := db.GetConfig(appEnv).Dialect
 	connectDB(dialect, dbURI)
+	// d.LogMode(true)
 }
 
 func connectDB(dialect, dbURI string) {
@@ -31,7 +27,7 @@ func connectDB(dialect, dbURI string) {
 
 	conn, err := gorm.Open(dialect, dbURI)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 
 	d = conn

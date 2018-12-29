@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/dikaeinstein/go-rest-api/model"
 	"github.com/dikaeinstein/go-rest-api/route"
 )
 
 func main() {
-	// Get port from .env file, we did not specify any port
-	// so this should return an empty string when tested locally
+	d := model.GetDB()
+	defer d.Close() // Close db connection
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "4000"
@@ -19,7 +21,6 @@ func main() {
 
 	fmt.Println("localhost:" + port)
 
-	// Launch the app
 	err := http.ListenAndServe(":"+port, route.Router)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

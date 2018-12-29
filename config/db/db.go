@@ -23,9 +23,9 @@ func GetConfig(appEnv string) Config {
 }
 
 func init() {
-	err := godotenv.Load() // Load .env file
+	err := godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/dikaeinstein/go-rest-api/.env"))
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	config = map[string]Config{
 		"development": Config{

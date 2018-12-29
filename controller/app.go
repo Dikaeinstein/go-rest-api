@@ -21,5 +21,5 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 		"message": "Not found",
 		"status":  false,
 	}
-	response.Respond(w, data)
+	response.ErrorResponse(w, data, http.StatusNotFound)
 }

@@ -1,5 +1,8 @@
 {
 	"comment": "",
+	"heroku": {
+		"goVersion": "go1.11.2"
+	},
 	"ignore": "test",
 	"package": [
 		{
@@ -69,8 +72,5 @@
 			"revisionTime": "2018-10-17T08:28:34Z"
 		}
 	],
-	"rootPath": "github.com/dikaeinstein/go-rest-api",
-	"heroku": {
-        "goVersion": "go1.11.2"
-    }
+	"rootPath": "github.com/dikaeinstein/go-rest-api"
 }
