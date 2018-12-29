@@ -14,12 +14,12 @@ func main() {
 	// so this should return an empty string when tested locally
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "4000" // localhost
+		port = "4000"
 	}
 
 	fmt.Println("localhost:" + port)
 
-	// Launch the app, visit localhost:8000/api
+	// Launch the app
 	err := http.ListenAndServe(":"+port, route.Router)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
