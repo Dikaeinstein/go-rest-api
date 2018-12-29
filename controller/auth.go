@@ -1,16 +1,16 @@
-package controllers
+package controller
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/dikaeinstein/go-rest-api/models"
+	"github.com/dikaeinstein/go-rest-api/model"
 	"github.com/dikaeinstein/go-rest-api/util/response"
 )
 
 // CreateAccount creates a new user account using request payload
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
-	account := &models.Account{}
+	account := &model.Account{}
 	err := json.NewDecoder(r.Body).Decode(account) // Decode the request body into struct and failed if any error occur
 	if err != nil {
 		response.ErrorResponse(w, response.Message(false, "Invalid request"), http.StatusBadRequest)
@@ -23,13 +23,13 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 // Authenticate user using email and password
 func Authenticate(w http.ResponseWriter, r *http.Request) {
-	account := &models.Account{}
+	account := &model.Account{}
 	err := json.NewDecoder(r.Body).Decode(account) // decode the request body into struct and failed if any error occur
 	if err != nil {
 		response.ErrorResponse(w, response.Message(false, "Invalid request"), http.StatusBadRequest)
 		return
 	}
 
-	data := models.Login(account.Email, account.Password)
+	data := model.Login(account.Email, account.Password)
 	response.Respond(w, data)
 }
