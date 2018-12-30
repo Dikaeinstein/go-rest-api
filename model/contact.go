@@ -1,7 +1,8 @@
 package model
 
 import (
-	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/dikaeinstein/go-rest-api/util/response"
 	"github.com/jinzhu/gorm"
@@ -31,39 +32,43 @@ func (contact *Contact) Validate() (map[string]interface{}, bool) {
 		return response.Message(false, "User is not recognized"), false
 	}
 	// All the required parameters are present
-	return response.Message(true, "success"), true
+	return response.Message(true, "Requirement passed"), true
 }
 
 // Create new contact
-func (contact *Contact) Create() map[string]interface{} {
+func (contact *Contact) Create() (map[string]interface{}, int, bool) {
 	if data, ok := contact.Validate(); !ok {
-		return data
+		return data, http.StatusBadRequest, false
 	}
 
 	GetDB().Create(contact)
 
-	data := response.Message(true, "success")
+	data := response.Message(true, "Successfully created contact")
 	data["contact"] = contact
-	return data
+	return data, http.StatusCreated, true
 }
 
 // GetContact retrieve contact using contact id
-func GetContact(id uint) *Contact {
+func GetContact(id uint) (*Contact, int, bool) {
 	contact := &Contact{}
 	err := GetDB().Table("contacts").Where("id = ?", id).First(contact).Error
 	if err != nil {
-		return nil
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, http.StatusNotFound, false
+		}
+		log.Println(err)
+		return nil, http.StatusInternalServerError, false
 	}
-	return contact
+	return nil, http.StatusOK, true
 }
 
 // GetContacts retrieves all the contacts that belongs to user
-func GetContacts(user uint) []*Contact {
+func GetContacts(user uint) ([]*Contact, int, bool) {
 	contacts := make([]*Contact, 0)
 	err := GetDB().Table("contacts").Where("user_id = ?", user).Find(&contacts).Error
-	if err != nil {
-		fmt.Println(err)
-		return nil
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		log.Println(err)
+		return nil, http.StatusInternalServerError, false
 	}
-	return contacts
+	return contacts, http.StatusOK, true
 }

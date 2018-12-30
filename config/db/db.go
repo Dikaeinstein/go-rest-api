@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -25,7 +25,7 @@ func GetConfig(appEnv string) Config {
 func init() {
 	err := godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/dikaeinstein/go-rest-api/.env"))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	config = map[string]Config{
 		"development": Config{

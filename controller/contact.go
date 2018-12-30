@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/dikaeinstein/go-rest-api/middleware"
@@ -11,12 +12,14 @@ import (
 
 // CreateContact creates a new user contact
 func CreateContact(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(uint) // Grab the id of the user that send the request
+	// Grab the id of the user that send the request
+	user := r.Context().Value(middleware.User("user")).(uint)
 	contact := &model.Contact{}
 
 	err := json.NewDecoder(r.Body).Decode(contact)
 	if err != nil {
-		response.ErrorResponse(
+		log.Println(err)
+		response.RespondWithStatus(
 			w,
 			response.Message(false, "Error while decoding request body"),
 			http.StatusBadRequest,
@@ -25,16 +28,25 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contact.UserID = user
-	data := contact.Create()
-	response.Respond(w, data)
+	data, status, ok := contact.Create()
+	if !ok {
+		response.RespondWithStatus(w, data, status)
+	}
+	response.RespondWithStatus(w, data, status)
 }
 
 // GetContactsFor retrieves all contacts for a specific user
 func GetContactsFor(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(middleware.User("user")).(uint) // Grab the id of the user that sent the request
+	// Grab the id of the user that sent the request
+	user := r.Context().Value(middleware.User("user")).(uint)
 
-	contacts := model.GetContacts(user)
-	data := response.Message(true, "success")
+	contacts, status, ok := model.GetContacts(user)
+	if !ok && status == http.StatusInternalServerError {
+		data := response.Message(false, "Connection error. Please retry")
+		response.RespondWithStatus(w, data, status)
+		return
+	}
+	data := response.Message(true, "Success")
 	data["data"] = contacts
 	response.Respond(w, data)
 }

@@ -54,7 +54,7 @@ func JwtAuthentication(next http.Handler) http.Handler {
 		tk := &model.Token{}
 
 		token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("token_password")), nil
+			return []byte(os.Getenv("SECRET")), nil
 		})
 
 		if err != nil { // Malformed token, returns with http code 403 as usual
@@ -75,10 +75,10 @@ func JwtAuthentication(next http.Handler) http.Handler {
 
 		// Everything went well, proceed with the request and
 		// set the caller to the user retrieved from the parsed token
-		// fmt.Sprintf("User %d", tk.UserID) // Useful for monitoring
 		ctx := context.WithValue(r.Context(), User("user"), tk.UserID)
 		r = r.WithContext(ctx)
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		// Call the next handler, which can be another middleware in the chain,
+		// or the final handler.
 		next.ServeHTTP(w, r)
 	})
 }

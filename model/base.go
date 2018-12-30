@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/url"
 	"os"
@@ -27,11 +28,12 @@ func connectDB(dialect, dbURI string) {
 
 	conn, err := gorm.Open(dialect, dbURI)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	d = conn
-	d.Debug().AutoMigrate(&Account{}, &Contact{}) // Database migration
+	// Database migration
+	d.Debug().AutoMigrate(&Account{}, &Contact{})
 }
 
 func parseDbConfig(appEnv string) string {
@@ -40,7 +42,7 @@ func parseDbConfig(appEnv string) string {
 	if appEnv == "production" || appEnv == "prod" {
 		parsedURL, err := url.Parse(db.GetConfig(appEnv).DbURL)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		username = parsedURL.User.Username()
 		password, _ = parsedURL.User.Password()
