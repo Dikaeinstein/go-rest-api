@@ -1,6 +1,10 @@
 language: go
-
+sudo: false
 go:
-  - "1.11.x"
-
-script: go test -v ./...
+- 1.11.x
+script: APP_ENV=test go test -v ./...
+deploy:
+  provider: heroku
+  api_key:
+    secure: JKwcFVlu6K+sIBtkoWz4nN0KSvb6gXe4YAA3Z6PHy6ZW41VkMxt1w6P2Rpi0a8DPU9fB7DMKuD49cPLBQY5ePzIy9awoyCg7mSOz+GV/MgAVLtDS9lEudyiLLp4WW49vTnJ7msnwirFdq3vxkWTX+s+G5Nau4S+Ttu+Sy1mJnKiPjzAl0nxaKslbiDVTA6/Yony4P8uTnVJRZ9uXElrhsJ8cI4drenZ4uc0qP3zyaSfnLsIEoqKSMy9yHt+mkCMdNDu6oTJUyD5YCiOmb956EQZzfiHdalmqnHCquWhv8ecalwiX/5XEzMtG64m6dXUsCGUe01wHGImeJRsxR8cB8TaN5b+j4ibhczxC5yWdtIklIrjoqrKx1l9no2b2F+bxuepdZgYC0OVSAMku4R7W4EdliHHPhmKueSW1F3NdqBYbI3GnYbxeADQClm5gIoh6QxhQHgGu4nsUUgOUKu2OLMigjKOvzZrQgTqgYuU7jnQ60UKLiVdpzDfHGQDbZGCLKU8utOg3/72OeuzENLueGXV9ZplkYnzlCAFwa4yPvsCKRFdv/BO8LsaS+ke0jrZ3vRgcD+/5gjiQ6TKLpgBx5v+nbiCpU/RNTEaE2SUpBDstPbCvFu2/BLaMMy4NvA199wQAUoqDzpeL3YDL/LC0mvxUGPItcKFzbfUp62Nd1Nc=
+  app: dikaeinstein-go-rest-api
