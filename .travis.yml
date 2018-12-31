@@ -2,7 +2,19 @@ language: go
 sudo: false
 go:
 - 1.11.x
-script: APP_ENV=test go test -v ./...
+env:
+  - APP_ENV=test
+  - DB_TEST=travis_ci_test
+  - DB_PASS=
+  - DB_USER=postgres
+  - DB_TYPE=postgres
+  - DB_HOST=localhost
+  - DB_PORT=5432
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+script: go test -v ./...
 deploy:
   provider: heroku
   api_key:
