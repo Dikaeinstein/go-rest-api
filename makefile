@@ -1,9 +1,5 @@
 BINARY_NAME=go-rest-api
 
-## Build binary
-build:
-	go build
-
 ## Fetch dependencies
 install:
 	go get -t -v ./...
@@ -11,6 +7,10 @@ install:
 ## Run tests
 test:
 	APP_ENV=test go test -v ./...
+
+## Build binary
+build:
+	go build
 
 ## Execute binary
 run:build
