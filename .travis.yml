@@ -21,6 +21,7 @@ script:
   - make test
   - make build
 before_deploy:
+  - go get -u github.com/kardianos/govendor
   - govendor sync
   - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web .
 deploy:
