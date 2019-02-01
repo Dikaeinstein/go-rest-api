@@ -25,4 +25,4 @@ script:
 #   - docker build -t go-rest-api:$HEROKU_LABEL
 deploy:
   provider: script
-  script: heroku_push.sh
+  script: chmod +x ./heroku_push.sh && ./heroku_push.sh
