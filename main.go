@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 
 	"github.com/dikaeinstein/go-rest-api/model"
 	"github.com/dikaeinstein/go-rest-api/route"
 )
 
-var wait = flag.Duration("graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+var wait = flag.Duration("graceful-timeout", time.Second*5, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 
 func main() {
 	flag.Parse()
@@ -35,9 +36,11 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 	}
-
+	var wg sync.WaitGroup
+	wg.Add(2)
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
+		wg.Done()
 		fmt.Println("localhost:" + port)
 		err := srv.ListenAndServe()
 		if err != nil {
@@ -58,11 +61,21 @@ func main() {
 	defer cancel()
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.
-	srv.Shutdown(ctx)
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// <-ctx.Done() if your application should wait for other services
 	// to finalize based on context cancellation.
-	fmt.Println()
-	log.Println("shutting down...")
+	go func() {
+		defer wg.Done()
+		<-ctx.Done()
+		fmt.Println()
+		log.Println("shutting down...")
+		srv.Shutdown(ctx)
+	}()
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done) // Signal done channel
+	}()
+	<-done
 	os.Exit(0)
 }

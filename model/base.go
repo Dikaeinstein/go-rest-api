@@ -18,9 +18,10 @@ var d *gorm.DB // Database
 func init() {
 	appEnv := os.Getenv("APP_ENV")
 	dbURI := parseDbConfig(appEnv)
-	dialect := db.GetConfig(appEnv).Dialect
+	config := db.GetConfig(appEnv)
+	dialect := config.Dialect
 	connectDB(dialect, dbURI)
-	// d.LogMode(true)
+	d.LogMode(config.Logging)
 }
 
 func connectDB(dialect, dbURI string) {

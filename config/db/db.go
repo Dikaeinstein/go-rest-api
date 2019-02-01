@@ -13,6 +13,7 @@ type Config struct {
 	Username, Password string
 	DbName, DbHost     string
 	DbURL              string
+	Logging            bool
 }
 
 var config map[string]Config
@@ -34,6 +35,7 @@ func init() {
 			Password: os.Getenv("DB_PASS"),
 			DbName:   os.Getenv("DB_DEV"),
 			DbHost:   os.Getenv("DB_HOST"),
+			Logging:  true,
 		},
 		"test": Config{
 			Dialect:  os.Getenv("DB_TYPE"),
@@ -45,6 +47,7 @@ func init() {
 		"production": Config{
 			Dialect: os.Getenv("DB_TYPE"),
 			DbURL:   os.Getenv("DATABASE_URL"),
+			Logging: true,
 		},
 	}
 }
