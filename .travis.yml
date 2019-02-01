@@ -20,9 +20,9 @@ script:
   - make install
   - make test
   - make build
-# before_deploy:
-#   - export HEROKU_LABEL=git-$(git rev-parse --verify HEAD --short)
-#   - docker build -t go-rest-api:$HEROKU_LABEL
+before_deploy:
+  - export HEROKU_LABEL=git-$(git rev-parse --verify HEAD --short)
+  - docker build -t registry.heroku.com/dikaeinstein-go-rest-api:${HEROKU_LABEL}/web
 deploy:
   provider: script
   script: chmod +x ./heroku_push.sh && ./heroku_push.sh
