@@ -21,7 +21,7 @@ script:
   - make test
   - make build
 before_deploy:
-  - export HEROKU_LABEL=git-$(git rev-parse --verify HEAD --short)
+  - export HEROKU_LABEL=$(git rev-parse --verify HEAD --short)
   - docker build -t registry.heroku.com/dikaeinstein-go-rest-api:${HEROKU_LABEL}/web
 deploy:
   provider: script
