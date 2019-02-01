@@ -21,7 +21,7 @@ script:
   - make test
   - make build
 before_deploy:
-  - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web
+  - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web .
 deploy:
   provider: script
   script: chmod +x ./heroku_push.sh && ./heroku_push.sh
