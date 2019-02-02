@@ -2,8 +2,6 @@
 docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
 docker push registry.heroku.com/dikaeinstein-go-rest-api/web
 
-echo $WEB_DOCKER_IMAGE_ID
-
 # Release container via API
 curl -n -X PATCH https://api.heroku.com/apps/dikaeinstein-go-rest-api/formation \
   -d '{
