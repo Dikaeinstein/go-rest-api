@@ -15,7 +15,7 @@ import (
 	"github.com/dikaeinstein/go-rest-api/route"
 )
 
-var wait = flag.Duration("graceful-timeout", time.Second*5, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+var wait = flag.Duration("graceful-timeout", time.Second*3, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 
 func main() {
 	flag.Parse()
@@ -27,7 +27,7 @@ func main() {
 		port = "4000"
 	}
 
-	addr := "localhost:" + port
+	addr := ":" + port
 	srv := http.Server{
 		Addr:    addr,
 		Handler: route.Router,
@@ -40,11 +40,11 @@ func main() {
 	wg.Add(2)
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		wg.Done()
-		fmt.Println("localhost:" + port)
+		defer wg.Done()
+		fmt.Println("Listening on port:", port)
 		err := srv.ListenAndServe()
 		if err != nil {
-			log.Println("ListenAndServe: ", err)
+			log.Println("ListenAndServe:", err)
 		}
 	}()
 
@@ -71,6 +71,7 @@ func main() {
 		log.Println("shutting down...")
 		srv.Shutdown(ctx)
 	}()
+
 	done := make(chan struct{})
 	go func() {
 		wg.Wait()

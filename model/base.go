@@ -25,8 +25,6 @@ func init() {
 }
 
 func connectDB(dialect, dbURI string) {
-	fmt.Println(dbURI)
-
 	conn, err := gorm.Open(dialect, dbURI)
 	if err != nil {
 		log.Println(err)
