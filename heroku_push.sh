@@ -13,4 +13,5 @@ curl -n -X PATCH https://api.heroku.com/apps/dikaeinstein-go-rest-api/formation 
   ]
 }' \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $HEROKU_API_KEY"
   -H "Accept: application/vnd.heroku+json; version=3.docker-releases"
