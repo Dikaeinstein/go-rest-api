@@ -25,6 +25,7 @@ before_deploy:
   - govendor sync
   - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web .
   - export WEB_DOCKER_IMAGE_ID=$(docker inspect registry.heroku.com/dikaeinstein-go-rest-api/web --format={{.Id}})
+  - echo $WEB_DOCKER_IMAGE_ID
 deploy:
   provider: script
   script: chmod +x ./heroku_push.sh && ./heroku_push.sh
