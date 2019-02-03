@@ -26,7 +26,6 @@ before_deploy:
   - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web .
   - curl https://cli-assets.heroku.com/install.sh | sh
   - heroku --version
-  # - export WEB_DOCKER_IMAGE_ID=$(docker images --filter=reference=registry.heroku.com/dikaeinstein-go-rest-api/web --format "{{.ID}}")
 deploy:
   provider: script
   script: chmod +x ./heroku_push.sh && ./heroku_push.sh
