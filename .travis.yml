@@ -23,7 +23,8 @@ script:
 before_deploy:
   - go get -u github.com/kardianos/govendor
   - govendor sync
-  - docker build -t registry.heroku.com/dikaeinstein-go-rest-api/web .
+  - export DOCKER_IMAGE_TAG=git-$(git rev-parse --verify HEAD --short)
+  - docker build -t dikaeinstein-go-rest-api:$DOCKER_IMAGE_TAG .
   - curl https://cli-assets.heroku.com/install.sh | sh
   - heroku --version
 deploy:
