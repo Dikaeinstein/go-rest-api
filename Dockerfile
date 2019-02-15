@@ -3,7 +3,7 @@ FROM golang:1.11.4-stretch AS build
 ARG app=/go/src/github.com/dikaeinstein/go-rest-api
 COPY . /${app}
 WORKDIR /${app}
-
+RUN go get -u github.com/kardianos/govendor && govendor sync
 RUN go build -o /go-rest-api .
 
 # Put the binary onto Heroku image
