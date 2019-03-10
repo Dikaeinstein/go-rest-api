@@ -3,11 +3,8 @@ package model
 import (
 	"fmt"
 	"log"
-	"net"
-	"net/url"
-	"os"
 
-	"github.com/dikaeinstein/go-rest-api/config/db"
+	"github.com/dikaeinstein/go-rest-api/config"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // Register the postgres db driver
@@ -16,47 +13,23 @@ import (
 var d *gorm.DB // Database
 
 func init() {
-	appEnv := os.Getenv("APP_ENV")
-	dbURI := parseDbConfig(appEnv)
-	config := db.GetConfig(appEnv)
-	dialect := config.Dialect
-	connectDB(dialect, dbURI)
-	d.LogMode(config.Logging)
+	config := config.New()
+	connectDB(config.Db)
+	d.LogMode(config.Db.Logging)
 }
 
-func connectDB(dialect, dbURI string) {
-	conn, err := gorm.Open(dialect, dbURI)
+func connectDB(dc config.DBConfig) {
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
+		dc.DbHost, dc.Username, dc.DbName, dc.Password)
+
+	conn, err := gorm.Open(dc.Dialect, dbURI)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
 	d = conn
 	// Database migration
 	d.Debug().AutoMigrate(&Account{}, &Contact{})
-}
-
-func parseDbConfig(appEnv string) string {
-	var username, password, dbName, dbHost string
-
-	if appEnv == "production" || appEnv == "prod" {
-		parsedURL, err := url.Parse(db.GetConfig(appEnv).DbURL)
-		if err != nil {
-			log.Println(err)
-		}
-		username = parsedURL.User.Username()
-		password, _ = parsedURL.User.Password()
-		dbName = parsedURL.Path[1:]
-		dbHost, _, _ = net.SplitHostPort(parsedURL.Host)
-	} else {
-		c := db.GetConfig(appEnv)
-		username = c.Username
-		password = c.Password
-		dbName = c.DbName
-		dbHost = c.DbHost
-	}
-
-	return fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
-		dbHost, username, dbName, password)
 }
 
 // GetDB returns a handle to the DB object
