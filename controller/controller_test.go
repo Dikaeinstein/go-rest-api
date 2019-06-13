@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/dikaeinstein/go-rest-api/middleware"
@@ -21,8 +21,9 @@ type ResponseData struct {
 
 type handler func(w http.ResponseWriter, r *http.Request)
 
-func createPayload(payload string) *bytes.Buffer {
-	return bytes.NewBuffer([]byte(payload))
+func createPayload(payload string) *strings.Reader {
+	// return bytes.NewBuffer([]byte(payload))
+	return strings.NewReader(payload)
 }
 
 func clearTable(table string) {
@@ -189,13 +190,16 @@ var contactTests = []struct {
 func TestContactHandlers(t *testing.T) {
 	clearTable("contacts")
 	for _, c := range contactTests {
+		mux := http.NewServeMux()
+		mux.HandleFunc(c.route, c.h)
+
 		req, err := http.NewRequest(c.method, c.route, c.body)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(c.h)
+		// handler := http.HandlerFunc(c.h)
 
 		// Populate the request's context with our test data.
 		ctx := req.Context()
@@ -203,7 +207,7 @@ func TestContactHandlers(t *testing.T) {
 		// Add our context to the request: note that WithContext returns a copy of
 		// the request, which we must assign.
 		req = req.WithContext(ctx)
-		handler.ServeHTTP(rr, req)
+		mux.ServeHTTP(rr, req)
 
 		if status := rr.Code; status != c.code {
 			t.Errorf("handler returned wrong status code: %v; want %v",

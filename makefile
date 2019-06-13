@@ -6,7 +6,7 @@ install:
 
 ## Run tests
 test:
-	APP_ENV=test go test -v ./...
+	APP_ENV=test go test -race -v ./...
 
 ## Build binary
 build:
