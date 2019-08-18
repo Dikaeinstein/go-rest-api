@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/dikaeinstein/go-rest-api/model"
 	"github.com/dikaeinstein/go-rest-api/route"
 )
@@ -27,15 +29,19 @@ func main() {
 		port = "4000"
 	}
 
+	r := mux.NewRouter()
+	route := route.New(r)
+
 	addr := ":" + port
 	srv := http.Server{
 		Addr:    addr,
-		Handler: route.Router,
+		Handler: route.SetupRoutes(),
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 	}
+
 	var wg sync.WaitGroup
 	wg.Add(2)
 	// Run our server in a goroutine so that it doesn't block.

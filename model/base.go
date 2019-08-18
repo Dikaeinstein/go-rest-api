@@ -18,6 +18,10 @@ func init() {
 	d.LogMode(config.Db.Logging)
 }
 
+func New(db *gorm.DB) {
+
+}
+
 func connectDB(dc config.DBConfig) {
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
 		dc.DbHost, dc.Username, dc.DbName, dc.Password)

@@ -8,16 +8,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Router is a *mux.Router that should be passed to the HTTP listener
-var Router *mux.Router
-
-func init() {
-	Router = routes() // Initialize Router
+// Route wraps *mux.Router that should be passed to the HTTP listener
+type Route struct {
+	*mux.Router
 }
 
-func routes() *mux.Router {
-	router := mux.NewRouter()
-	api := router.PathPrefix("/api").Subrouter()
+// New creates a new route.
+func New(router *mux.Router) *Route {
+	return &Route{router}
+}
+
+// SetupRoutes sets up routes on the router.
+func (r *Route) SetupRoutes() *mux.Router {
+	api := r.PathPrefix("/api").Subrouter()
 
 	api.Path("").HandlerFunc(controller.Welcome).Methods(http.MethodGet)
 	api.Path("/user/new").HandlerFunc(controller.CreateAccount).Methods(http.MethodPost)
@@ -28,5 +31,5 @@ func routes() *mux.Router {
 
 	api.Use(middleware.JwtAuthentication) // Attach JWT auth middleware
 
-	return router
+	return r.Router
 }
