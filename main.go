@@ -73,7 +73,6 @@ func main() {
 	go func() {
 		defer wg.Done()
 		<-ctx.Done()
-		fmt.Println()
 		log.Println("shutting down...")
 		srv.Shutdown(ctx)
 	}()
