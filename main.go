@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -47,20 +46,19 @@ func main() {
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
 		defer wg.Done()
-		fmt.Println("Listening on port:", port)
-		err := srv.ListenAndServe()
-		if err != nil {
-			log.Println("ListenAndServe:", err)
+		log.Println("Listening on port:", port)
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalln("ListenAndServe:", err)
 		}
 	}()
 
-	c := make(chan os.Signal, 1)
+	stop := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(stop, os.Interrupt)
 
 	// Block until we receive signal
-	<-c
+	<-stop
 
 	// Create a deadline to wait for
 	ctx, cancel := context.WithTimeout(context.Background(), *wait)
@@ -72,16 +70,14 @@ func main() {
 	// to finalize based on context cancellation.
 	go func() {
 		defer wg.Done()
-		<-ctx.Done()
 		log.Println("shutting down...")
-		srv.Shutdown(ctx)
+		err := srv.Shutdown(ctx)
+		if err != nil && err != http.ErrServerClosed {
+			log.Fatalln("Shutdown:", err)
+		}
+		log.Println("shutdown complete")
 	}()
 
-	done := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(done) // Signal done channel
-	}()
-	<-done
+	wg.Wait()
 	os.Exit(0)
 }
